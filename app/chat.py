@@ -7,7 +7,7 @@ from report_translator import translate_text
 load_dotenv()
 
 # Use the Meta Llama 3.2 11B Instruct model (Vision version works for text too)
-MODEL_NAME ="meta-llama/llama-4-maverick:free"
+MODEL_NAME ="meta-llama/llama-3.2-11b-vision-instruct"
 
 def get_openai_client():
     """Get OpenAI client with proper API key handling"""

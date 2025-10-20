@@ -36,7 +36,7 @@ def get_vision_client():
 
 # Use OpenRouter supported models - GPT-4o for vision, Gemini for translation
 MODEL_NAME = "google/gemini-2.0-flash-exp:free"
-VISION_MODEL = "openai/gpt-4o"
+VISION_MODEL = "meta-llama/llama-4-scout:free"
 
 # 🔍 Function to extract text from an image or PDF using LLM vision or pdfplumber
 def extract_text(file_path):

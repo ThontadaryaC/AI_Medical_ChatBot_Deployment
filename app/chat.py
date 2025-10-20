@@ -11,11 +11,9 @@ MODEL_NAME = "meta-llama/llama-3.2-11b-vision-instruct"
 
 def get_openai_client():
     """Get OpenAI client with proper API key handling"""
-    try:
-        api_key = st.secrets["OPENROUTER_API_KEY"]
-    except KeyError:
-        api_key = os.getenv("OPENROUTER_API_KEY")
-
+    
+    api_key = st.secrets["OPENROUTER_API_KEY"]
+    
     return openai.OpenAI(
         api_key=api_key,
         base_url="https://openrouter.ai/api/v1"

@@ -27,6 +27,7 @@ def load_bg_image(image_path):
         full_path = os.path.join(current_dir, "..", image_path)
         with open(full_path, "rb") as img_file:
             encoded = base64.b64encode(img_file.read()).decode()
+            
         return encoded
     except FileNotFoundError:
         # Fallback for deployment - use a default background
@@ -282,12 +283,19 @@ tab_objects = st.tabs(tabs)
 with tab_objects[0]:
     from chat import chat_with_bot
     from tts_component import speak_last_response
+    from report_translator import translate_text
 
     # Initialize chat history
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = [
             {"role": "system", "content": "You are an intelligent AI medical assistant. Answer accurately and clearly. If the user asks about analyzing medical images, translating reports, or finding hospitals, guide them to use the Image Analysis, Report Reader, or Hospital Locator tabs respectively. For other medical queries, provide direct answers without mentioning other features."}
         ]
+
+    # Initialize translation state
+    if "translate_last" not in st.session_state:
+        st.session_state.translate_last = False
+    if "translated_last" not in st.session_state:
+        st.session_state.translated_last = None
 
     # Simple chat interface - Display messages first
     if st.session_state.chat_history and len(st.session_state.chat_history) > 1:
@@ -296,7 +304,15 @@ with tab_objects[0]:
         # Display chat messages with TTS buttons
         for idx, message in enumerate(st.session_state.chat_history[1:]):
             with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+                if message["role"] == "assistant" and idx == len(st.session_state.chat_history[1:]) - 1 and st.session_state.translate_last:
+                    if st.session_state.translated_last is None:
+                        # Translate the last assistant message
+                        current_lang = st.session_state.get("language_preference", "hi")
+                        lang_name = next((name for name, code in language_options if code == current_lang), "Hindi")
+                        st.session_state.translated_last = translate_text(message["content"], dest_lang=current_lang, dest_lang_name=lang_name)
+                    st.markdown(st.session_state.translated_last)
+                else:
+                    st.markdown(message["content"])
 
     col1, col2 = st.columns([4,1])
     with col1:
@@ -317,6 +333,15 @@ with tab_objects[0]:
 
     with col2:
         speak_last_response(st.session_state.chat_history)
+
+        # Translation toggle button
+        if st.session_state.chat_history and len(st.session_state.chat_history) > 1 and st.session_state.chat_history[-1]["role"] == "assistant":
+            if st.button("🌐" if not st.session_state.translate_last else "🇺🇸", key="translate_toggle"):
+                st.session_state.translate_last = not st.session_state.translate_last
+                if st.session_state.translate_last:
+                    # Reset translated text to force re-translation if language changed
+                    st.session_state.translated_last = None
+                st.rerun()
 
 with tab_objects[1]:
     from image_analysis import analyze_medical_image

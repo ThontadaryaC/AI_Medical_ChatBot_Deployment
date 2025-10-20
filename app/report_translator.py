@@ -13,9 +13,9 @@ load_dotenv()
 def get_openai_client():
     """Get OpenAI client with proper API key handling"""
     try:
-        api_key = st.secrets["OPENROUTER_API_KEY_REPORT"]
+        api_key = st.secrets["OPENROUTER_Chat_API_KEY"]
     except KeyError:
-        api_key = os.getenv("OPENROUTER_API_KEY_REPORT")
+        api_key = os.getenv("OPENROUTER_Chat_API_KEY")
 
     return openai.OpenAI(
         api_key=api_key,

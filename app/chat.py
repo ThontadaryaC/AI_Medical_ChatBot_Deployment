@@ -7,12 +7,12 @@ from report_translator import translate_text
 load_dotenv()
 
 # Use the Meta Llama 3.2 11B Instruct model (Vision version works for text too)
-MODEL_NAME = "meta-llama/llama-3.2-11b-vision-instruct"
+MODEL_NAME = "google/gemini-2.0-flash-exp:free"
 
 def get_openai_client():
     """Get OpenAI client with proper API key handling"""
     
-    api_key = st.secrets["OPENROUTER_API_KEY"]
+    api_key = st.secrets["OPENROUTER_Chat_API_KEY"]
     
     return openai.OpenAI(
         api_key=api_key,

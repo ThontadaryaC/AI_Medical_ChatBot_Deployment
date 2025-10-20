@@ -316,7 +316,6 @@ with tab_objects[0]:
             st.rerun()
 
     with col2:
-        st.markdown("### 🔊 Text-to-Speech")
         speak_last_response(st.session_state.chat_history)
 
 with tab_objects[1]:

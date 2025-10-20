@@ -57,8 +57,12 @@ def speak_text_component(text):
                     utterance.onerror = function(event) {{
                         isSpeaking = false;
                         button.textContent = '🔊 Speak';
-                        statusDiv.textContent = 'Speech synthesis error: ' + event.error;
-                        statusDiv.style.color = 'red';
+                        if (event.error !== 'interrupted') {{
+                            statusDiv.textContent = 'Speech synthesis error: ' + event.error;
+                            statusDiv.style.color = 'red';
+                        }} else {{
+                            statusDiv.textContent = '';
+                        }}
                     }};
 
                     speechSynthesis.speak(utterance);

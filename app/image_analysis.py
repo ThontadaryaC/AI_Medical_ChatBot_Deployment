@@ -27,7 +27,7 @@ def analyze_medical_image(image_path, image_type, target_lang=None):
             base64_image = base64.b64encode(image_file.read()).decode('utf-8')
 
         # Use GPT-4o for vision
-        vision_model = "meta-llama/llama-4-maverick:free"
+        vision_model = "meta-llama/llama-3.2-11b-vision-instruct"
 
         # Create prompt based on image type
         if image_type == "X-ray":

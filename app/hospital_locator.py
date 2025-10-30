@@ -45,17 +45,24 @@ def get_location_from_address(address: str) -> Optional[Tuple[float, float]]:
         st.error(f"Error geocoding address: {e}")
         return None
 
-def show_google_maps_link(location: str):
+def show_google_maps_link(location: str, hospital_type: str = "hospital"):
     """
     Display a link to Google Maps for hospital search.
 
     Args:
         location: Location to search for hospitals
+        hospital_type: Type of hospital to search for
     """
-    st.subheader(f"🏥 Hospitals near {location}")
+    # Determine the search query based on hospital type
+    if hospital_type == "hospital":
+        search_query = f"hospitals near {location}"
+        type_display = "Hospitals"
+    else:
+        search_query = f"{hospital_type} hospitals near {location}"
+        type_display = f"{hospital_type.capitalize()} Hospitals"
 
-    # Create search query for hospitals
-    search_query = f"hospitals near {location}"
+    st.subheader(f"🏥 {type_display} near {location}")
+
     encoded_query = urllib.parse.quote(search_query)
 
     # Create Google Maps URL
@@ -79,13 +86,13 @@ def show_google_maps_link(location: str):
             🗺️ Open Google Maps for Hospital Search
         </a>
         <p style="margin-top: 15px; color: #666; font-size: 14px;">
-            Click the button above to open Google Maps and find hospitals near {location}
+            Click the button above to open Google Maps and find {type_display.lower()} near {location}
         </p>
     </div>
     """, unsafe_allow_html=True)
 
     # Add some helpful information
-    st.info("💡 **How to use:** Click the button above to open Google Maps in a new tab. The map will automatically search for hospitals in your specified location.")
+    st.info(f"💡 **How to use:** Click the button above to open Google Maps in a new tab. The map will automatically search for {type_display.lower()} in your specified location.")
 
 def find_nearest_hospitals(location_input: str = "", use_current_location: bool = False,
                           radius: int = 5000, hospital_type: str = "hospital") -> Tuple[List[Dict], Optional[Tuple[float, float]]]:
@@ -96,7 +103,7 @@ def find_nearest_hospitals(location_input: str = "", use_current_location: bool 
         location_input: Address or city name (used if not using current location)
         use_current_location: Whether to use browser geolocation
         radius: Search radius in meters (not used with Google Maps embed)
-        hospital_type: Type of hospital to search for (not used with Google Maps embed)
+        hospital_type: Type of hospital to search for
 
     Returns:
         Tuple of (empty_list, center_coordinates)
@@ -114,26 +121,19 @@ def find_nearest_hospitals(location_input: str = "", use_current_location: bool 
             st.warning("⚠️ Could not detect current location. Please enter location manually.")
             if not location_input:
                 return [], None
-            lat, lng = get_location_from_address(location_input)
+            # Try geocoding but don't fail if it doesn't work
+            lat, lng = get_location_from_address(location_input) or (None, None)
             location_name = location_input
     else:
         if not location_input:
             st.error("Please enter a location or enable current location detection.")
             return [], None
 
-        location_result = get_location_from_address(location_input)
-        if location_result is None:
-            st.error(f"Could not find coordinates for: {location_input}")
-            return [], None
-
-        lat, lng = location_result
+        # Try geocoding but don't fail if it doesn't work
+        lat, lng = get_location_from_address(location_input) or (None, None)
         location_name = location_input
 
-    if not lat or not lng:
-        st.error(f"Could not find coordinates for: {location_input or 'current location'}")
-        return [], None
+    # Always display Google Maps link, even if geocoding failed
+    show_google_maps_link(location_name, hospital_type)
 
-    # Display Google Maps link
-    show_google_maps_link(location_name)
-
-    return [], (lat, lng)
+    return [], (lat, lng) if lat and lng else None

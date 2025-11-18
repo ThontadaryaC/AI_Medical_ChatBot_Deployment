@@ -46,8 +46,8 @@ def apply_theme(theme):
         tab_text_color = "red"
     else:
         bg_image = load_bg_image("assets/dark_bg.png")
-        text_color = "#FFFFFF"
-        chat_user_bg = "#2b7a78"
+        text_color = "white"
+        chat_user_bg = "#e7e7e7"
         chat_bot_bg = "#3a3a3a"
         button_color = "#1E88E5"
         button_text_color = "#ffffff"
@@ -405,6 +405,21 @@ with tab_objects[2]:
 
 with tab_objects[3]:
     from hospital_locator import find_nearest_hospitals
+
+    # Override input text color to black for hospital locator tab
+    st.markdown("""
+    <style>
+    .stTextInput > div > div > input {
+        color: black !important;
+    }
+    .stSelectbox > div > div {
+        color: black !important;
+    }
+    .stCheckbox > div > div > label {
+        color: black !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     st.subheader("🗺️ Find Nearest Hospitals")
 

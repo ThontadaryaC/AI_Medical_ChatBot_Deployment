@@ -22,6 +22,12 @@ def get_openai_client():
 def chat_with_bot(messages, target_lang=None):
     try:
         client = get_openai_client()
+        # Prepend system message to restrict to medical questions
+        system_message = {
+            "role": "system",
+            "content": "You are a medical assistant chatbot. Only answer questions related to medicine, health, or medical topics. If the query is not related to medicine, politely decline to answer and suggest asking a medical question."
+        }
+        messages = [system_message] + messages
         # Send message to OpenRouter (chat format)
         response = client.chat.completions.create(
             model=MODEL_NAME,
